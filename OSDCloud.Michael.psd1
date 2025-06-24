@@ -9,16 +9,16 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'OSDCloud.psm1'
+RootModule = 'OSDCloud.Michael.psm1'
 
 # Version number of this module.
-ModuleVersion = '25.6.15.1'
+ModuleVersion = '25.6.23.1'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Desktop'
 
 # ID used to uniquely identify this module
-GUID = '2fbd5c65-79c7-4561-9a2e-c4a4eebc89c7'
+GUID = 'b1e3c2d4-8f7a-4e2c-9b5d-3f6a1e2c7d8f'
 
 # Author of this module
 Author = 'David Segura, Michael Escamilla'
@@ -30,7 +30,7 @@ CompanyName = 'osdeploy.com'
 Copyright = '(c) 2025 @ osdeploy.com. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'OSDCloud NUKE - Workplace Ninjas UK Edition'
+Description = 'OSDCloud Michael Edition'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -109,7 +109,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'OSDeploy','OSD','OSDWorkspace','OSDCloud'
+        Tags = 'OSDeploy','OSD','OSDWorkspace','OSDCloud', 'OSDCloud.Michael'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/OSDeploy/OSDCloud/blob/main/LICENSE'
