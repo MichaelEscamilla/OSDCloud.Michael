@@ -30,6 +30,14 @@ function step-install-downloadwindowsimage {
         New-Item @ItemParams | Out-Null
     }
     #=================================================
+    # Check if the file already exists on another drive
+    $FileName = Split-Path $OperatingSystemObject.Url -Leaf
+    $OfflineOSFile = Find-OSDCloudFile -Name $FileName -Path '\OSDCloud\OS\' | Sort-Object FullName | Where-Object { $_.Length -gt 3GB }
+    if ($OfflineOSFile) {
+        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Offline OS Image Found: $($OfflineOSFile.FullName)"
+        $FileInfo = $OfflineOSFile
+    }
+    #==================================================
     # Is there a USB drive available?
     $USBDrive = Get-USBVolume | Where-Object { ($_.FileSystemLabel -match "OSDCloud|USB-DATA") } | Where-Object { $_.SizeGB -ge 16 } | Where-Object { $_.SizeRemainingGB -ge 10 } | Select-Object -First 1
 
@@ -41,16 +49,27 @@ function step-install-downloadwindowsimage {
         Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] DownloadPath: $DownloadPath"
         Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] FileName: $FileName"
 
-        # Download the file
-        $SaveWebFile = Save-WebFile -SourceUrl $OperatingSystemObject.Url -DestinationDirectory "$DownloadPath" -DestinationName $FileName
+        # Check if we already have the file available
+        if ($FileInfo) {
+            Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Copying Offline OS to USB Drive: $($USBDrive.DriveLetter):\OSDCloud\OS\$($FileName)"
+            # Copy the file to the USB drive
+            $null = Copy-Item -Path $FileInfo.FullName -Destination "$DownloadPath" -Force
+            $OfflineUSBFile = $FileInfo
+        }
+        else {
+            # Download the file
+            $OfflineUSBFile = Save-WebFile -SourceUrl $OperatingSystemObject.Url -DestinationDirectory "$DownloadPath" -DestinationName $FileName
+        }
 
-        if ($SaveWebFile) {
-            Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Copy Offline OS to C:\OSDCloud\OS\$($SaveWebFile.Name)"
-            $null = Copy-Item -Path $SaveWebFile.FullName -Destination 'C:\OSDCloud\OS' -Force
-            $FileInfo = Get-Item "C:\OSDCloud\OS\$($SaveWebFile.Name)"
+        if ($OfflineUSBFile) {
+            Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Copy Offline OS to C:\OSDCloud\OS\$($OfflineUSBFile.Name)"
+            $null = Copy-Item -Path $OfflineUSBFile.FullName -Destination 'C:\OSDCloud\OS' -Force
+            $FileInfo = Get-Item "C:\OSDCloud\OS\$($OfflineUSBFile.Name)"
         }
     }
-    else {
+    #=================================================
+    # Download the file from the Internet
+    if (-not ($FileInfo)) {
         # $SaveWebFile is a FileInfo Object, not a path
         $SaveWebFile = Save-WebFile -SourceUrl $OperatingSystemObject.Url -DestinationDirectory 'C:\OSDCloud\OS' -ErrorAction Stop
         $FileInfo = $SaveWebFile
