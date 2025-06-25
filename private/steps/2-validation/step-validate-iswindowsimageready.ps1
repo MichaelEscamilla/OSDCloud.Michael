@@ -12,7 +12,22 @@ function step-validate-iswindowsimageready {
     # Get the configuration of the step
     $Step = $global:OSDCloudWorkflowCurrentStep
     #=================================================
-    # Is there an Opeating System ImageFile URL?
+    # Does the file exist on a Drive?
+    $FileName = Split-Path $global:OSDCloudWorkflowInvoke.OperatingSystemObject.Url -Leaf
+    $MatchingFiles = @()
+    $MatchingFiles = Get-PSDrive -PSProvider FileSystem | ForEach-Object {
+        Get-ChildItem "$($_.Name):\OSDCloud\OS\" -Include "$FileName" -File -Recurse -Force -ErrorAction Ignore
+    }
+    
+    if ($MatchingFiles) {
+        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] OperatingSystem is available offline."
+        return
+    }
+    else {
+        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] OperatingSystem is not available offline."
+    }
+    #=================================================
+    # Is there an Operating System ImageFile URL?
     if (-not ($global:OSDCloudWorkflowInvoke.OperatingSystemObject.Url)) {
         Write-Warning "[$(Get-Date -format G)] OperatingSystemObject does not have a Url to validate."
         Write-Warning 'Press Ctrl+C to cancel OSDCloud'
@@ -30,21 +45,6 @@ function step-validate-iswindowsimageready {
     }
     catch {
         Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] OperatingSystem URL is not reachable."
-    }
-    #=================================================
-    # Does the file exist on a Drive?
-    $FileName = Split-Path $global:OSDCloudWorkflowInvoke.OperatingSystemObject.Url -Leaf
-    $MatchingFiles = @()
-    $MatchingFiles = Get-PSDrive -PSProvider FileSystem | ForEach-Object {
-        Get-ChildItem "$($_.Name):\OSDCloud\OS\" -Include "$FileName" -File -Recurse -Force -ErrorAction Ignore
-    }
-    
-    if ($MatchingFiles) {
-        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] OperatingSystem is available offline. OK."
-        return
-    }
-    else {
-        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] OperatingSystem is not available offline."
     }
     #=================================================
     # Can't access the file so need to bail

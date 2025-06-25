@@ -45,16 +45,20 @@ function step-install-downloadwindowsimage {
         $DownloadPath = "$($USBDrive.DriveLetter):\OSDCloud\OS\$($OperatingSystemObject.OperatingSystem) $($OperatingSystemObject.ReleaseID)"
         $FileName = Split-Path $OperatingSystemObject.Url -Leaf
 
-        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Url: $($OperatingSystemObject.Url)"
-        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] DownloadPath: $DownloadPath"
-        Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] FileName: $FileName"
+        # Create the download path on the USB drive
+        if (-not (Test-Path $DownloadPath -ErrorAction SilentlyContinue)) {
+            New-Item -ItemType Directory -Path $DownloadPath -Force -ErrorAction SilentlyContinue | Out-Null
+        }
 
-        # Check if we already have the file available
+        # Check if we already have an Offline file available
         if ($FileInfo) {
-            Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Copying Offline OS to USB Drive: $($USBDrive.DriveLetter):\OSDCloud\OS\$($FileName)"
-            # Copy the file to the USB drive
-            $null = Copy-Item -Path $FileInfo.FullName -Destination "$DownloadPath" -Force
-            $OfflineUSBFile = $FileInfo
+            # Check if the file already exists on the USB drive
+            if (-not (Test-Path -Path "$($DownloadPath)\$($FileName)" -ErrorAction SilentlyContinue)) {
+                Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Copying Offline OS to USB Drive: $($DownloadPath)"
+                # Copy the file to the USB drive
+                $null = Copy-Item -Path $FileInfo.FullName -Destination "$($DownloadPath)" -Force
+            }
+            $OfflineUSBFile = Get-Item -Path "$($DownloadPath)\$($FileName)"
         }
         else {
             # Download the file
