@@ -32,7 +32,10 @@ function step-install-downloadwindowsimage {
     #=================================================
     # Check if the file already exists on another drive
     $FileName = Split-Path $OperatingSystemObject.Url -Leaf
-    $OfflineOSFile = Find-OSDCloudFile -Name $FileName -Path '\OSDCloud\OS\' | Sort-Object FullName | Where-Object { $_.Length -gt 3GB }
+    #$OfflineOSFile = Find-OSDCloudFile -Name $FileName -Path '\OSDCloud\OS\' | Sort-Object FullName | Where-Object { $_.Length -gt 3GB }
+    $OfflineOSFile = Get-PSDrive -PSProvider FileSystem | ForEach-Object {
+        Get-ChildItem "$($_.Name):\OSDCloud\OS\" -Include "$FileName" -File -Recurse -Force -ErrorAction Ignore | Where-Object { $_.Length -gt 3GB }
+    }
     if ($OfflineOSFile) {
         Write-Host -ForegroundColor DarkGray "[$(Get-Date -format G)] Offline OS Image Found: $($OfflineOSFile.FullName)"
         $FileInfo = $OfflineOSFile
