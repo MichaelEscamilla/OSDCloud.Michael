@@ -1,0 +1,104 @@
+{
+    "id": "2bc42a9c-3ce1-44a6-847d-593c47d362c5",
+    "name": "OSDCloud Michael",
+    "description": "OSDCloud Michael",
+    "author": "MichaelEscamilla",
+    "version": "2025.6.25.1",
+    "amd64": true,
+    "arm64": true,
+    "default": true,
+    "steps": [
+        {
+            "name": "Start Workflow",
+            "description": "Start the OSDCloud Workflow",
+            "command": "step-initialize-startosdcloudworkflow",
+            "args": [],
+            "parameters": {
+                "WorkflowName": "OSDCloud Core"
+            },
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        },
+        {
+            "name": "Start Logs",
+            "description": "Creates the log directory and initializes logging",
+            "command": "step-initialize-startosdcloudlogs",
+            "args": [],
+            "parameters": {},
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        },
+        {
+            "name": "Validate WindowsImage Availability",
+            "description": "Test if the image exists and is reachable",
+            "command": "step-validate-iswindowsimageready",
+            "args": [],
+            "parameters": {},
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        },
+        {
+            "name": "Validate DriverPack Availability",
+            "description": "Tests if the driver pack is reachable",
+            "command": "step-validate-isdriverpackready",
+            "args": [],
+            "parameters": {},
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        },
+        {
+            "name": "DownloadWindowsOS",
+            "description": "Downloads the Windows OS image",
+            "command": "step-install-downloadwindowsimage",
+            "args": [],
+            "parameters": {},
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        },
+        {
+            "name": "GetWindowsImageIndex",
+            "description": "Retrieves the index of the Windows image",
+            "command": "step-install-getwindowsimageindex",
+            "args": [],
+            "parameters": {},
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        },
+        {
+            "name": "Stop Logs",
+            "status": "Ready",
+            "description": "Stops logging and copys to the log directory",
+            "command": "step-osdcloud-logs-stop",
+            "args": [],
+            "parameters": {},
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        },
+        {
+            "name": "Stop Workflow",
+            "status": "Ready",
+            "description": "Stops the OSDCloud workflow",
+            "command": "step-finalize-stoposdcloudworkflow",
+            "args": [],
+            "parameters": {},
+            "rules": {
+                "runinfullos": true,
+                "skip": false
+            }
+        }
+    ]
+}

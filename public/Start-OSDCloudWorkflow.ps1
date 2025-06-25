@@ -5,7 +5,7 @@ function Start-OSDCloudWorkflow {
             Position = 0,
             ValueFromPipelineByPropertyName = $true)]
         [System.String]
-        $Name = 'default',
+        $Name = 'Michael',
         [switch]
         $CLI
     )
